@@ -1,4 +1,3 @@
-package packageTest;
 
 import javax.swing.*;
 import java.awt.*;

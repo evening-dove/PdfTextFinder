@@ -1,3 +1,5 @@
+
+
 // The frame where search reults are shown
 
 import javax.swing.*;
