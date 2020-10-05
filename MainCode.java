@@ -1,4 +1,4 @@
-
+package packageTest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +15,7 @@ public class MainCode extends JFrame
     private MainCode thisFrame=this;
     
     static JPanel mainPanel=new JPanel(new FlowLayout());
+    JPanel mainMenuPanel = new JPanel();
     
     static JButton startButton=new JButton("Start");
 
@@ -41,6 +42,12 @@ public class MainCode extends JFrame
                 thisFrame.updateUi("findFolder");;
                 }
         });
+
+        mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.PAGE_AXIS));
+        mainMenuPanel.add(new JLabel("Hello! This is a program that lets you search for stuff :D"));
+        mainMenuPanel.add(startButton);
+
+
         
         updateUi("main");
         add(mainPanel);
@@ -76,7 +83,7 @@ public class MainCode extends JFrame
         try{
             if (newMenu == "main"){
                 mainPanel.removeAll();
-                mainPanel.add(startButton);
+                mainPanel.add(mainMenuPanel);
             } else if (newMenu == "findFolder"){
 
                 mainPanel.removeAll();

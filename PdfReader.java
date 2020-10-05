@@ -64,7 +64,9 @@ public class PdfReader {
             pdfStripper.extractRegions(document.getPage(pageNumber));
 
             for (int i = 0; i < slidesPerPage; i++){
-                currentSlides[i] = pdfStripper.getTextForRegion( "r"+i );
+                currentSlides[i] = pdfStripper.getTextForRegion( "r"+i ).replace(
+                                    "The picture can't be displayed",
+                                    "CONTAINS UNDISPLAYABLE IMAGE");
             }
 
             for (int slideNum = 0; slideNum < slidesPerPage; slideNum++){

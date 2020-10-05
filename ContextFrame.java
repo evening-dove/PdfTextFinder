@@ -10,18 +10,72 @@ import javax.swing.text.Highlighter.HighlightPainter;
 
 import java.util.*;
 
+import java.io.File;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import java.io.IOException;
+
 public class ContextFrame extends JFrame{
 
     SearchResults resultFrame;
-    JScrollPane mainPanel;
-    //JPanel mainPanel = new JPanel(new BorderLayout());
+    JPanel mainPanel = new JPanel(new BorderLayout());
 
     JTextArea contextText;
 
-    //JButton openPageButton = new JButton("Open as single page PDF");
+    JLabel searchInfoLabel;
+    JLabel searchPageLabel;
+    JButton openPageButton = new JButton("Open as single page PDF");
 
-    public ContextFrame(SearchResults resultFrame, String textToShow, String searchedText) {
+    public ContextFrame(SearchResults resultFrame, 
+                        String textToShow, 
+                        String searchedText, 
+                        int pageNum,
+                        String fileName) {
+
         this.resultFrame = resultFrame;
+
+        searchInfoLabel = new JLabel("Results for: \"" + searchedText + "\"");
+        searchPageLabel = new JLabel("Found on Page: " + (pageNum + 1));
+
+
+
+
+        //anonymous listener for the open page button
+        openPageButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent event){
+                try{
+                    System.out.println(resultFrame.parentFrame.fPicker.chosenDir + "/" + fileName);
+                    System.out.println(System.getProperty("java.io.tmpdir") + 
+                    "Page" + 
+                    pageNum + 
+                    fileName);
+
+
+
+                    File file = new File(resultFrame.parentFrame.fPicker.chosenDir + "/" +
+                        fileName);
+                    File outFile = new File(System.getProperty("java.io.tmpdir") + 
+                                            "Page" + 
+                                            pageNum + 
+                                            fileName);
+                    System.out.println(System.getProperty("java.io.tmpdir"));
+                    PDDocument originalPdf = PDDocument.load(file);
+                    PDDocument singlePagePdf = new PDDocument();
+                    singlePagePdf.addPage(originalPdf.getPage(pageNum));
+                    singlePagePdf.save(outFile);
+                    singlePagePdf.close();
+                    Desktop.getDesktop().open(outFile);
+                    
+                }
+                catch(IOException e){
+                    //System.out.println(e);
+                }
+            }
+        });
+
+
+
+
+
 
         // Create and setup text area for slide text
         contextText = new JTextArea(textToShow);
@@ -34,7 +88,19 @@ public class ContextFrame extends JFrame{
         }
 
         // Setup main UI elements
-        mainPanel = new JScrollPane(contextText);
+        JScrollPane scrollPanel = new JScrollPane(contextText);
+
+        JPanel searchInfoPanel = new JPanel(new FlowLayout());
+        JPanel pageLocationPanel = new JPanel();
+        pageLocationPanel.setLayout(new BoxLayout(pageLocationPanel, BoxLayout.PAGE_AXIS));
+        
+        searchInfoPanel.add(searchInfoLabel);
+        pageLocationPanel.add(searchPageLabel);
+        pageLocationPanel.add(openPageButton);
+        searchInfoPanel.add(pageLocationPanel);
+
+        mainPanel.add(searchInfoPanel, BorderLayout.PAGE_START);
+        mainPanel.add(scrollPanel, BorderLayout.CENTER);
         add(mainPanel);
         setSize(this.getPreferredSize());
         setVisible(true);
@@ -42,7 +108,7 @@ public class ContextFrame extends JFrame{
 
     // Setup prefered size for frame
     public Dimension getPreferredSize(){
-        return new Dimension(300, 500);
+        return new Dimension(600, 500);
     }
 
     // Highlight text that was searched for

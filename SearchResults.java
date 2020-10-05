@@ -36,7 +36,7 @@ public class SearchResults extends JFrame{
     public void buildLayout(String searchedText, Hashtable<String, Hashtable<Integer, String>> results){
 
         // Place text explaining results
-        JLabel searchText = new JLabel("Results for: " + searchedText);
+        JLabel searchText = new JLabel("Results for: \"" + searchedText + "\"");
         mainPanel.add(searchText, BorderLayout.PAGE_START);
 
         // Place section showing results
@@ -58,7 +58,14 @@ public class SearchResults extends JFrame{
         // Create and add the line for file with results
         JPanel resultFullLine = new JPanel(new BorderLayout());
         resultFullLine.setBorder(BorderFactory.createEmptyBorder(10,0,10,0));
-        JButton fileButton = new JButton(fileName);
+
+        JButton fileButton;
+        if (fileName.length() > 30){
+            fileButton = new JButton(fileName.substring(0, 25) + "...");
+        }else{
+            fileButton = new JButton(fileName);
+        }
+        fileButton.setToolTipText(fileName);
 
         fileButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event){
@@ -77,17 +84,21 @@ public class SearchResults extends JFrame{
         tmpPanel.add(fileButton);
         resultFullLine.add(tmpPanel, BorderLayout.LINE_START);
 
-        GridLayout pagesLayout = new GridLayout(0, 10, 10, 10);
+        GridLayout pagesLayout = new GridLayout(0, 5, 10, 10);
         JPanel resultPages = new JPanel(pagesLayout);
 
         // loop though all slides with results
-        for (Integer pageNum: new TreeSet<Integer>(results.get(fileName).keySet())){
+        for (Integer slideNum: new TreeSet<Integer>(results.get(fileName).keySet())){
             // Create and add the open slide button
-            JButton pageButton = new JButton("Slide " + pageNum);
+            JButton pageButton = new JButton("Slide " + slideNum);
             // Add action listener so clicking on a slide will open its page text
             pageButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent event){
-                    cFrames.add(new ContextFrame(thisFrame,  results.get(fileName).get(pageNum), searchedText));
+                    cFrames.add(new ContextFrame(thisFrame,  
+                                                 results.get(fileName).get(slideNum), 
+                                                 searchedText, 
+                                                 (int)((slideNum-1)/(int)parentFrame.fPicker.slidesPerPageSpinner.getValue()),
+                                                 fileName));
                     }
             });
             resultPages.add(pageButton);
@@ -99,7 +110,7 @@ public class SearchResults extends JFrame{
 
     // Setup prefered size for frame
     public Dimension getPreferredSize(int resultCount){
-        return new Dimension(600, 10 + 120 * resultCount);
+        return new Dimension(700, 10 + 120 * resultCount);
     }
 
     /*

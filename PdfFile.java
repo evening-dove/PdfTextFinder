@@ -34,6 +34,7 @@ public class PdfFile {
         System.out.println(searchPdfs("and", false, true, false));
     }
 
+
     public PdfFile(String fileName, List<String> fileText){
         this.fileName = fileName;
         this.fileText = fileText;
@@ -154,5 +155,15 @@ public class PdfFile {
         return pages;
 
 
+    }
+
+
+    public static PdfFile find(String toFind){
+        for (PdfFile pdf : PdfFile.allPdfs){
+            if (pdf.fileName == toFind){
+                return pdf;
+            }
+        }
+        return null;
     }
 }
